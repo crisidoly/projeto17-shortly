@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function postSignin(req, res) {
+export async function postSignIn(req, res) {
     const { email, password } = req.body;
     const token = uuidv4();
 
