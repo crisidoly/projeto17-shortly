@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { v4 as uuidv4 } from 'uuid';
 import db from "../database/databaseConnection.js";
 
@@ -14,20 +15,22 @@ export async function deleteUrl(req, res) {
 export async function urlShortenController(req, res) {
     const userId = res.locals.userId;
     const originalUrl = res.locals.url;
-    const shortUrl = uuidv4();
+    const shortUrl = uuidv4(); // Gera uma URL curta aleatória
 
     try {
-        await db.query(
-            `INSERT INTO urls ("userId", url, "shortUrl") VALUES ($1, $2, $3)`,
+        const result = await db.query(
+            `INSERT INTO urls ("userId", url, "shortUrl") VALUES ($1, $2, $3) RETURNING id`,
             [userId, originalUrl, shortUrl]
         );
-        
-        res.status(201).send({ userId, shortUrl });
-        console.log(shortUrl)
+
+        const newUrlId = result.rows[0].id; // Obtém o ID gerado
+
+        res.status(201).send({ id: newUrlId, shortUrl });
     } catch (err) {
         res.status(500).send(err.message);
     }
 }
+
 
 
 export async function redirectUser(req, res) {
