@@ -11,7 +11,7 @@ const configDatabase = {
         rejectUnauthorized: false
     }
 }
-if (process.env.NODE_ENV === "production") configDatabase.ssl = true;
+//if (process.env.NODE_ENV === "production") configDatabase.ssl = true;
 
 const db = new Pool(configDatabase);
 
