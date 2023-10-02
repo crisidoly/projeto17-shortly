@@ -1,10 +1,21 @@
 import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from 'uuid';
 import db from "../database/databaseConnection.js";
+
+export async function deleteUrl(req, res) {
+    try {
+        const urlId = req.params.id;
+        await db.query(`DELETE FROM urls WHERE id = $1`, [urlId]);
+        res.sendStatus(204);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+}
 
 export async function urlShortenController(req, res) {
     const userId = res.locals.userId;
     const originalUrl = res.locals.url;
-    const shortUrl = nanoid();
+    const shortUrl = uuidv4();
 
     try {
         await db.query(
@@ -18,25 +29,6 @@ export async function urlShortenController(req, res) {
     }
 }
 
-export async function getUrlbyId(req, res) {
-    try {
-        const userId = req.params.id;
-        const queryResult = await db.query(
-            `SELECT id, url, "shortUrl" FROM urls WHERE "userId" = $1`,
-            [userId]
-        );
-
-        const urls = queryResult.rows;
-
-        if (urls.length === 0) {
-            return res.status(404).send("No URLs found for the respective user id");
-        }
-
-        return res.status(200).json(urls);
-    } catch (err) {
-        return res.status(500).send(err.message);
-    }
-}
 
 export async function redirectUser(req, res) {
     const shortUrl = req.params.shortUrl;
@@ -69,13 +61,24 @@ export async function redirectUser(req, res) {
     }
 }
 
-export async function deleteUrl(req, res) {
+export async function getUrlbyId(req, res) {
     try {
-        const urlId = req.params.id;
-        await db.query(`DELETE FROM urls WHERE id = $1`, [urlId]);
-        res.sendStatus(204);
+        const userId = req.params.id;
+        const queryResult = await db.query(
+            `SELECT id, url, "shortUrl" FROM urls WHERE "userId" = $1`,
+            [userId]
+        );
+
+        const urls = queryResult.rows;
+
+        if (urls.length === 0) {
+            return res.status(404).send("No URLs found for the respective user id");
+        }
+
+        return res.status(200).json(urls);
     } catch (err) {
-        res.status(500).send(err.message);
+        return res.status(500).send(err.message);
     }
 }
+
 

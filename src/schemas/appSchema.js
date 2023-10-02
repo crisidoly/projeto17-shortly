@@ -1,6 +1,5 @@
 import Joi from "joi";
 
-
 export const signupSchema = Joi.object({
         name: Joi.string().required().min(1),
         email: Joi.string().required().min(1).email(),
@@ -16,3 +15,4 @@ export const signInSchema = Joi.object({
 export const urlSchema = Joi.object({
     url: Joi.string().uri().required()
 });
+
