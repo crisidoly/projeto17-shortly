@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { v4 as uuidv4 } from 'uuid';
 import db from "../database/databaseConnection.js";
 
@@ -23,7 +22,8 @@ export async function urlShortenController(req, res) {
             [userId, originalUrl, shortUrl]
         );
         
-        res.status(201).send({ shortUrl });
+        res.status(201).send({ userId, shortUrl });
+        console.log(shortUrl)
     } catch (err) {
         res.status(500).send(err.message);
     }
