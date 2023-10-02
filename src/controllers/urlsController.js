@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { db } from "../database/databaseConnection.js";
+import db from "../database/databaseConnection.js";
 
 export async function urlShortenController(req, res) {
     const userId = res.locals.userId;

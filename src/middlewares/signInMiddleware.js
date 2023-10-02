@@ -1,11 +1,11 @@
-import { signInSchemaValidation } from "../models/signin.js"
-import { db } from "../database/databaseConnection.js";
+import { signInSchema } from "../schemas/appSchema.js";
 import bcrypt from "bcrypt"
+import db from "../database/databaseConnection.js"
 
 export async function signInValidation(req, res, next) {
     const signInBody = req.body;
 
-    const { error } = signInSchemaValidation.validate(signInBody, { abortEarly: false });
+    const { error } = signInSchema.validate(signInBody, { abortEarly: false });
 
     if (error) {
         const errors = error.details.map(detail => detail.message)

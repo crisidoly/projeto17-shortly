@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.16 (Ubuntu 12.16-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 12.16 (Ubuntu 12.16-0ubuntu0.20.04.1)
+-- Dumped from database version 14.9 (Ubuntu 14.9-1.pgdg22.04+1)
+-- Dumped by pg_dump version 14.9 (Ubuntu 14.9-1.pgdg22.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,22 +21,22 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: authenticationSessions; Type: TABLE; Schema: public; Owner: -
+-- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public."authenticationSessions" (
+CREATE TABLE public.sessions (
     id integer NOT NULL,
-    "userId" integer NOT NULL,
     token text NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "userId" integer
 );
 
 
 --
--- Name: authenticationSessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public."authenticationSessions_id_seq"
+CREATE SEQUENCE public.sessions_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -46,10 +46,10 @@ CREATE SEQUENCE public."authenticationSessions_id_seq"
 
 
 --
--- Name: authenticationSessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public."authenticationSessions_id_seq" OWNED BY public."authenticationSessions".id;
+ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
@@ -58,11 +58,11 @@ ALTER SEQUENCE public."authenticationSessions_id_seq" OWNED BY public."authentic
 
 CREATE TABLE public.urls (
     id integer NOT NULL,
-    "originalURL" text NOT NULL,
-    "shortenedURL" text NOT NULL,
-    "visitCount" integer NOT NULL,
-    "userId" integer NOT NULL,
-    "createdAt" timestamp without time zone DEFAULT now() NOT NULL
+    url text NOT NULL,
+    "shortUrl" text NOT NULL,
+    "visitCount" integer DEFAULT 0 NOT NULL,
+    "createdAt" timestamp without time zone DEFAULT now() NOT NULL,
+    "userId" integer
 );
 
 
@@ -120,10 +120,10 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: authenticationSessions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."authenticationSessions" ALTER COLUMN id SET DEFAULT nextval('public."authenticationSessions_id_seq"'::regclass);
+ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.sessions_id_seq'::regclass);
 
 
 --
@@ -141,7 +141,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- Data for Name: authenticationSessions; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 
@@ -156,13 +156,16 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
+INSERT INTO public.users VALUES (1, 'João', 'joao@driven.com.br', '$2b$10$zZdQ/Y1fJUCHHOkRXuc/l.vUzA34.WdraH877COt7hDsTV1wcnxQa', '2023-10-02 11:17:58.514732');
+INSERT INTO public.users VALUES (2, 'João', 'joaoa@driven.com.br', '$2b$10$yDKjL0zv/JO4UwhOtFVMiuoJr4.Thuf3j5ZacSYtanYJvhUfTCHom', '2023-10-02 11:19:45.022714');
+INSERT INTO public.users VALUES (3, 'João', 'joaoaa@driven.com.br', '$2b$10$lWGSVaoQHY81F0lJQg4bbO0erDmE.KgD4vZE5ai66rkdaQ0rIDMza', '2023-10-02 11:25:12.384391');
 
 
 --
--- Name: authenticationSessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public."authenticationSessions_id_seq"', 1, false);
+SELECT pg_catalog.setval('public.sessions_id_seq', 1, false);
 
 
 --
@@ -176,31 +179,23 @@ SELECT pg_catalog.setval('public.urls_id_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
 
 
 --
--- Name: authenticationSessions authenticationSessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."authenticationSessions"
-    ADD CONSTRAINT "authenticationSessions_pkey" PRIMARY KEY (id);
-
-
---
--- Name: authenticationSessions authenticationSessions_token_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."authenticationSessions"
-    ADD CONSTRAINT "authenticationSessions_token_key" UNIQUE (token);
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
 
 
 --
--- Name: urls urls_originalURL_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_token_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.urls
-    ADD CONSTRAINT "urls_originalURL_key" UNIQUE ("originalURL");
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT sessions_token_key UNIQUE (token);
 
 
 --
@@ -212,11 +207,11 @@ ALTER TABLE ONLY public.urls
 
 
 --
--- Name: urls urls_shortenedURL_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: urls urls_shortUrl_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.urls
-    ADD CONSTRAINT "urls_shortenedURL_key" UNIQUE ("shortenedURL");
+    ADD CONSTRAINT "urls_shortUrl_key" UNIQUE ("shortUrl");
 
 
 --
@@ -236,11 +231,11 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: authenticationSessions authenticationSessions_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: sessions sessions_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."authenticationSessions"
-    ADD CONSTRAINT "authenticationSessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
+ALTER TABLE ONLY public.sessions
+    ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
 
 
 --
@@ -254,3 +249,4 @@ ALTER TABLE ONLY public.urls
 --
 -- PostgreSQL database dump complete
 --
+
