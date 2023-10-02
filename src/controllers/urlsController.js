@@ -15,7 +15,7 @@ export async function deleteUrl(req, res) {
 export async function urlShortenController(req, res) {
     const userId = res.locals.userId;
     const originalUrl = res.locals.url;
-    const shortUrl = uuidv4(); // Gera uma URL curta aleatória
+    const shortUrl = uuidv4();
 
     try {
         const result = await db.query(
@@ -23,13 +23,14 @@ export async function urlShortenController(req, res) {
             [userId, originalUrl, shortUrl]
         );
 
-        const newUrlId = result.rows[0].id; // Obtém o ID gerado
+        const newUrlId = result.rows[0].id;
 
         res.status(201).send({ id: newUrlId, shortUrl });
     } catch (err) {
         res.status(500).send(err.message);
     }
 }
+
 
 
 
